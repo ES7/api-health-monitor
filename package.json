@@ -21,7 +21,7 @@
         {
           "id": "apiHealthMonitor",
           "title": "API Health Monitor",
-          "icon": "$(pulse)"
+          "icon": "images/logo.png"
         }
       ]
     },
