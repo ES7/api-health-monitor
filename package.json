@@ -1,7 +1,7 @@
 {
   "name": "api-health-monitor",
-  "displayName": "AI Usage Dashboard — every coding agent in one place",
-  "description": "Auto-detects the AI coding agents on your machine (Claude Code, Codex, GitHub Copilot, Cline, Roo Code, Kilo Code, Gemini CLI, Antigravity, OpenCode…) and shows tokens, cost, sessions and a GitHub-style usage calendar from their local logs. 100% local.",
+  "displayName": "Agent Ledger — AI Coding Agent Usage & Cost",
+  "description": "Every token your AI coding agents burn, in one ledger. Auto-detects Claude Code, Codex, GitHub Copilot, Cline, Roo Code, Kilo Code, Gemini CLI, Antigravity and OpenCode, and shows usage, cost, sessions and a GitHub-style calendar from their local logs. 100% local.",
   "version": "2.1.0",
   "publisher": "jallad",
   "license": "MIT",
@@ -19,6 +19,7 @@
     "Other"
   ],
   "keywords": [
+    "agent ledger",
     "claude code",
     "codex",
     "copilot",
@@ -42,7 +43,7 @@
       "activitybar": [
         {
           "id": "aiUsage",
-          "title": "AI Usage",
+          "title": "Agent Ledger",
           "icon": "media/icon.svg"
         }
       ]
@@ -59,25 +60,25 @@
     "commands": [
       {
         "command": "aiUsage.refresh",
-        "title": "AI Usage: Rescan Logs",
+        "title": "Agent Ledger: Rescan Logs",
         "icon": "$(refresh)"
       },
       {
         "command": "aiUsage.openPanel",
-        "title": "AI Usage: Open Full Dashboard",
+        "title": "Agent Ledger: Open Full Dashboard",
         "icon": "$(link-external)"
       },
       {
         "command": "aiUsage.exportCsv",
-        "title": "AI Usage: Export Usage as CSV"
+        "title": "Agent Ledger: Export Usage as CSV"
       },
       {
         "command": "aiUsage.clearCache",
-        "title": "AI Usage: Clear Cache and Rescan Everything"
+        "title": "Agent Ledger: Clear Cache and Rescan Everything"
       },
       {
         "command": "aiUsage.showLog",
-        "title": "AI Usage: Show Scan Log"
+        "title": "Agent Ledger: Show Scan Log"
       }
     ],
     "menus": {
@@ -95,7 +96,7 @@
       ]
     },
     "configuration": {
-      "title": "AI Usage Dashboard",
+      "title": "Agent Ledger",
       "properties": {
         "aiUsage.refreshIntervalMinutes": {
           "type": "number",

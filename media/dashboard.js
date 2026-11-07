@@ -1,5 +1,5 @@
 // @ts-check
-/* AI Usage Dashboard webview. Plain JS + inline SVG, no external libraries. */
+/* Agent Ledger webview. Plain JS + inline SVG, no external libraries. */
 (function () {
   const vscode = acquireVsCodeApi();
   const app = document.getElementById('app');
@@ -558,7 +558,7 @@
     const body = { overview, activity, sessions, models, projects, limits, agents }[state.tab] || overview;
     app.innerHTML = `
       <header>
-        <div class="title"><b>AI Usage</b><span class="muted">${scanMsg ? esc(scanMsg) : 'updated ' + ago(data.scannedAt)}</span><button class="link" data-act="tab" data-v="agents" title="Agents found on this computer">${data.status.filter((s) => s.detected).length} agents</button><button class="icon" data-act="refresh" title="Rescan logs">⟳</button></div>
+        <div class="title"><b>Agent Ledger</b><span class="muted">${scanMsg ? esc(scanMsg) : 'updated ' + ago(data.scannedAt)}</span><button class="link" data-act="tab" data-v="agents" title="Agents found on this computer">${data.status.filter((s) => s.detected).length} agents</button><button class="icon" data-act="refresh" title="Rescan logs">⟳</button></div>
         <div class="chips">${chips}</div>
         <div class="filters">
           <select data-act="range" title="Date range">${ranges}</select>

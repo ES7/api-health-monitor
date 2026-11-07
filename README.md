@@ -1,8 +1,10 @@
-# AI Usage Dashboard: every coding agent in one place
+# Agent Ledger
+
+**Every token your AI coding agents burn, in one ledger.**
 
 > Install it and it finds the AI coding agents you use. It shows every token they've burned (GitHub-style calendar, cost, sessions, models, projects), read from the logs those tools already keep on your computer. **No API keys, no proxy, nothing uploaded.**
 
-*Formerly **API Health Monitor**. v2 replaces the old proxy-based version, whose code is kept in [`v1/`](v1/).*
+*Formerly **API Health Monitor**. v1 tracked direct API calls through a local proxy; Agent Ledger tracks coding agents from their own logs instead. v1 code is kept in [`v1/`](v1/).*
 
 ![Overview: usage calendar, totals and per-tool breakdown](images/overview.png)
 

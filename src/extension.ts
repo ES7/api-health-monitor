@@ -13,7 +13,7 @@ let statusItem: vscode.StatusBarItem;
 let timer: NodeJS.Timeout | undefined;
 let extCtx: vscode.ExtensionContext;
 const views = new Set<vscode.Webview>();
-const log = vscode.window.createOutputChannel('AI Usage', { log: true });
+const log = vscode.window.createOutputChannel('Agent Ledger', { log: true });
 
 const cfg = () => vscode.workspace.getConfiguration('aiUsage');
 const broadcast = (msg: unknown) => { for (const v of views) { void v.postMessage(msg); } };
@@ -58,7 +58,7 @@ async function announceNewAgents(scan: ScanResult) {
     const counted = fresh.filter(s => s.support !== 'detect-only').map(s => s.name);
     const notCounted = fresh.filter(s => s.support === 'detect-only').map(s => s.name);
     const first = seen.size === 0;
-    let msg = first ? `AI Usage found ${detected.length} AI coding tool${detected.length === 1 ? '' : 's'}` : 'AI Usage found a new AI tool';
+    let msg = first ? `Agent Ledger found ${detected.length} AI coding agent${detected.length === 1 ? '' : 's'}` : 'Agent Ledger found a new AI coding agent';
     if (counted.length) { msg += `: ${counted.join(', ')}`; }
     if (notCounted.length) { msg += `${counted.length ? '. Also' : ':'} ${notCounted.join(', ')} (installed, but usage isn't stored locally)`; }
     const pick = await vscode.window.showInformationMessage(msg + '.', 'Open Dashboard');
@@ -84,7 +84,7 @@ function updateStatusBar() {
         tok += t; cost += r[ROW.COST]; per[r[ROW.SRC]] += t;
     }
     statusItem.text = `$(pulse) ${fmtTokens(tok)} · $${cost.toFixed(2)}`;
-    const md = new vscode.MarkdownString('**AI usage today**\n\n');
+    const md = new vscode.MarkdownString('**Agent Ledger: today**\n\n');
     latest.sources.forEach((s, i) => { if (per[i]) { md.appendMarkdown(`- ${s.name}: ${fmtTokens(per[i])} tokens\n`); } });
     if (!tok) { md.appendMarkdown('_No usage yet today._\n'); }
     md.appendMarkdown('\nCost is an API-equivalent estimate. Click to open the dashboard.');
@@ -106,7 +106,7 @@ function html(webview: vscode.Webview, extUri: vscode.Uri, mode: 'sidebar' | 'pa
     return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${n}'; img-src ${webview.cspSource} data:;">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="${css}"><title>AI Usage</title></head>
+<link rel="stylesheet" href="${css}"><title>Agent Ledger</title></head>
 <body class="${mode}"><div id="app"><div class="loading">Reading local logs…</div></div>
 <script nonce="${n}" src="${js}"></script></body></html>`;
 }
@@ -179,7 +179,7 @@ export function activate(ctx: vscode.ExtensionContext) {
     extCtx = ctx;
     scanner = new Scanner(path.join(ctx.globalStorageUri.fsPath, 'usage-cache.json'));
     statusItem = vscode.window.createStatusBarItem('aiUsage.status', vscode.StatusBarAlignment.Right, 100);
-    statusItem.name = 'AI Usage';
+    statusItem.name = 'Agent Ledger';
     statusItem.command = 'aiUsage.dashboard.focus';
 
     ctx.subscriptions.push(
@@ -198,7 +198,7 @@ export function activate(ctx: vscode.ExtensionContext) {
         }),
         vscode.commands.registerCommand('aiUsage.openPanel', () => {
             if (panel) { panel.reveal(); return; }
-            panel = vscode.window.createWebviewPanel('aiUsage.panel', 'AI Usage Dashboard', vscode.ViewColumn.Active, { enableScripts: true, retainContextWhenHidden: true });
+            panel = vscode.window.createWebviewPanel('aiUsage.panel', 'Agent Ledger', vscode.ViewColumn.Active, { enableScripts: true, retainContextWhenHidden: true });
             panel.iconPath = vscode.Uri.joinPath(ctx.extensionUri, 'media', 'icon.svg');
             const d = wire(panel.webview, ctx, 'panel');
             panel.onDidDispose(() => { d.dispose(); panel = undefined; });

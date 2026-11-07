@@ -2,6 +2,8 @@
 
 ## 2.1.0
 
+**API Health Monitor is now Agent Ledger.**
+
 **Upgrading from API Health Monitor 0.0.x:** this release replaces the old proxy-based extension. Nothing needs to be configured: it reads your AI tools' local logs directly. The v1 code lives in [`v1/`](v1/).
 
 
