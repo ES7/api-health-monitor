@@ -1,70 +1,193 @@
 {
   "name": "api-health-monitor",
-  "displayName": "API Health Monitor",
-  "description": "Monitor your AI API usage, cost and health in real-time",
-  "version": "0.0.1",
+  "displayName": "AI Usage Dashboard — every coding agent in one place",
+  "description": "Auto-detects the AI coding agents on your machine (Claude Code, Codex, GitHub Copilot, Cline, Roo Code, Kilo Code, Gemini CLI, Antigravity, OpenCode…) and shows tokens, cost, sessions and a GitHub-style usage calendar from their local logs. 100% local.",
+  "version": "2.1.0",
   "publisher": "jallad",
   "license": "MIT",
+  "icon": "images/logo.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/ES7/api-health-monitor"
   },
   "engines": {
-    "vscode": "^1.120.0"
+    "vscode": "^1.90.0"
   },
-  "categories": ["Other"],
-  "activationEvents": ["onStartupFinished"],
+  "categories": [
+    "AI",
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "claude code",
+    "codex",
+    "copilot",
+    "cline",
+    "roo code",
+    "kilo code",
+    "gemini cli",
+    "antigravity",
+    "opencode",
+    "token usage",
+    "ai cost",
+    "usage tracker",
+    "heatmap"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "apiHealthMonitor",
-          "title": "API Health Monitor",
-          "icon": "images/logo.png"
+          "id": "aiUsage",
+          "title": "AI Usage",
+          "icon": "media/icon.svg"
         }
       ]
     },
     "views": {
-      "apiHealthMonitor": [
+      "aiUsage": [
         {
           "type": "webview",
-          "id": "apiHealthMonitor.dashboard",
+          "id": "aiUsage.dashboard",
           "name": "Dashboard"
         }
       ]
     },
     "commands": [
       {
-        "command": "apiHealthMonitor.refresh",
-        "title": "API Health Monitor: Refresh Dashboard"
+        "command": "aiUsage.refresh",
+        "title": "AI Usage: Rescan Logs",
+        "icon": "$(refresh)"
       },
       {
-        "command": "apiHealthMonitor.clearData",
-        "title": "API Health Monitor: Clear All Data"
+        "command": "aiUsage.openPanel",
+        "title": "AI Usage: Open Full Dashboard",
+        "icon": "$(link-external)"
       },
       {
-        "command": "apiHealthMonitor.scanWorkspace",
-        "title": "API Health Monitor: Scan Workspace for APIs"
+        "command": "aiUsage.exportCsv",
+        "title": "AI Usage: Export Usage as CSV"
+      },
+      {
+        "command": "aiUsage.clearCache",
+        "title": "AI Usage: Clear Cache and Rescan Everything"
+      },
+      {
+        "command": "aiUsage.showLog",
+        "title": "AI Usage: Show Scan Log"
       }
-    ]
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "aiUsage.refresh",
+          "when": "view == aiUsage.dashboard",
+          "group": "navigation@1"
+        },
+        {
+          "command": "aiUsage.openPanel",
+          "when": "view == aiUsage.dashboard",
+          "group": "navigation@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "AI Usage Dashboard",
+      "properties": {
+        "aiUsage.refreshIntervalMinutes": {
+          "type": "number",
+          "default": 5,
+          "minimum": 0,
+          "description": "Rescan the logs every N minutes (0 = only on demand). Unchanged files are skipped, so rescans are cheap."
+        },
+        "aiUsage.statusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show today's tokens and estimated cost in the status bar."
+        },
+        "aiUsage.subscriptions": {
+          "type": "object",
+          "default": {
+            "claude": 0,
+            "codex": 0,
+            "antigravity": 0
+          },
+          "description": "What you pay per month for each tool (USD). Used to show how much API-equivalent value you get from your plan.",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "aiUsage.pricing": {
+          "type": "object",
+          "default": {},
+          "markdownDescription": "Override model prices in USD per 1M tokens. Key = part of the model name, e.g. `{ \"gpt-5.6-luna\": { \"input\": 0.2, \"output\": 1.2, \"cacheRead\": 0.02 } }`.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "number"
+              },
+              "output": {
+                "type": "number"
+              },
+              "cacheRead": {
+                "type": "number"
+              },
+              "cacheWrite": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "aiUsage.disabledAgents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "uniqueItems": true,
+          "markdownDescription": "Agent ids to ignore, e.g. `[\"copilot-chat\"]`. You can also toggle agents from the dashboard's **Agents** tab."
+        },
+        "aiUsage.extraPaths": {
+          "type": "object",
+          "default": {},
+          "markdownDescription": "Extra data folders per agent, for non-standard installs. Example: `{ \"claude-code\": [\"D:/claude-config\"], \"codex\": [\"D:/codex-home\"] }`. Agent ids: `claude-code`, `codex`, `copilot-chat`, `cline`, `roo-code`, `kilo-code`, `gemini-cli`, `antigravity`, `opencode`.",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src",
-    "test": "vscode-test"
+    "smoke": "node ./out/smoke.js",
+    "test": "npm run compile && node --test \"out/test/*.test.js\""
+  },
+  "dependencies": {
+    "fzstd": "^0.1.1",
+    "sql.js": "^1.13.0"
   },
   "devDependencies": {
-    "@types/vscode": "^1.120.0",
-    "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "typescript-eslint": "^8.56.1",
-    "eslint": "^9.39.3",
-    "typescript": "^5.9.3",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2"
+    "@types/sql.js": "^1.4.9",
+    "@types/vscode": "^1.90.0",
+    "typescript": "^5.9.3"
+  },
+  "bugs": {
+    "url": "https://github.com/ES7/api-health-monitor/issues"
+  },
+  "homepage": "https://github.com/ES7/api-health-monitor#readme",
+  "galleryBanner": {
+    "color": "#181818",
+    "theme": "dark"
   }
 }
